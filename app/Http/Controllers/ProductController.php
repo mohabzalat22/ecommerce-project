@@ -111,11 +111,16 @@ class ProductController extends Controller
                 return $this->error('Name and category_id are required', null, 400);
             }
 
+            $sku = $data['sku'] ?? null;
+            if (null === $sku || '' === trim((string) $sku)) {
+                $sku = 'SKU-'.bin2hex(random_bytes(6));
+            }
+
             $product = Product::create([
                 'category_id' => $data['category_id'],
                 'name' => $data['name'],
                 'slug' => $data['slug'] ?? $this->generateSlug($data['name']),
-                'sku' => $data['sku'] ?? null,
+                'sku' => $sku,
                 'base_price' => $data['base_price'] ?? 0,
                 'sale_price' => $data['sale_price'] ?? null,
                 'stock_qty' => $data['stock_qty'] ?? 0,

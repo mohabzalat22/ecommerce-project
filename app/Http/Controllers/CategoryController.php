@@ -11,18 +11,90 @@ class CategoryController extends Controller
 {
     /**
      * List all categories.
+     *
+     * Pass shallow=1 to omit eager-loading products (lighter for admin lists).
      */
     public function index(Request $request)
     {
         try {
-            $categories = Category::with('children', 'products')->get();
+            $shallow = filter_var($request->input('shallow'), FILTER_VALIDATE_BOOLEAN);
+            $with = ['children'];
+            if (!$shallow) {
+                $with[] = 'products';
+            }
+
+            $categories = Category::with($with)->get();
 
             return $this->success([
                 'items' => $categories,
                 'count' => count($categories),
-            ], 'Categories retrieved successfully');
+            ], 'Categories retrieved successfully', 200);
         } catch (\Exception $e) {
             return $this->error('Failed to retrieve categories', ['error' => $e->getMessage()], 400);
+        }
+    }
+
+    /**
+     * EAV attributes linked to this category (category_attributes pivot + attribute rows).
+     */
+    public function linkedAttributes(Request $request)
+    {
+        try {
+            $categoryId = $request->param('id');
+            if (!$categoryId) {
+                return $this->error('Category ID is required', null, 400);
+            }
+
+            $category = Category::find($categoryId);
+            if (!$category) {
+                return $this->error('Category not found', null, 404);
+            }
+
+            $attributes = $category->attributes()->with('options')->orderByPivot('sort_order')->get();
+
+            return $this->success($attributes, 'Category attributes retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), null, 500);
+        }
+    }
+
+    /**
+     * Replace category ↔ attribute links. Body: { "attributes": [ { "attribute_id": 1, "sort_order": 0 }, ... ] }.
+     */
+    public function syncAttributes(Request $request)
+    {
+        try {
+            $categoryId = $request->param('id');
+            $data = $request->json();
+            if (!$categoryId) {
+                return $this->error('Category ID is required', null, 400);
+            }
+
+            $category = Category::find($categoryId);
+            if (!$category) {
+                return $this->error('Category not found', null, 404);
+            }
+
+            $rows = $data['attributes'] ?? null;
+            if (!\is_array($rows)) {
+                return $this->error('attributes must be an array', null, 400);
+            }
+
+            $sync = [];
+            foreach ($rows as $row) {
+                $aid = $row['attribute_id'] ?? $row['id'] ?? null;
+                if (null === $aid || '' === $aid) {
+                    continue;
+                }
+                $sync[(int) $aid] = ['sort_order' => (int) ($row['sort_order'] ?? 0)];
+            }
+
+            $category->attributes()->sync($sync);
+            $attributes = $category->attributes()->with('options')->orderByPivot('sort_order')->get();
+
+            return $this->success($attributes, 'Category attributes updated successfully', 200);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), null, 500);
         }
     }
 
@@ -35,10 +107,7 @@ class CategoryController extends Controller
             $categoryId = $request->param('id');
 
             if (!$categoryId) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Category ID is required',
-                ]);
+                return $this->error('Category ID is required', null, 400);
             }
 
             $category = Category::with('parent', 'children', 'products', 'attributes')
@@ -46,21 +115,12 @@ class CategoryController extends Controller
             ;
 
             if (!$category) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Category not found',
-                ]);
+                return $this->error('Category not found', null, 404);
             }
 
-            return json_encode([
-                'success' => true,
-                'data' => $category,
-            ]);
+            return $this->success($category, 'Category retrieved successfully', 200);
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error($e->getMessage(), null, 500);
         }
     }
 
@@ -70,13 +130,10 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = $request->json();
 
             if (!$data || !isset($data['name'])) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Name is required',
-                ]);
+                return $this->error('Name is required', null, 400);
             }
 
             $category = Category::create([
@@ -90,16 +147,9 @@ class CategoryController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
 
-            return json_encode([
-                'success' => true,
-                'message' => 'Category created successfully',
-                'data' => $category,
-            ]);
+            return $this->success($category, 'Category created successfully', 201);
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error($e->getMessage(), null, 500);
         }
     }
 
@@ -110,22 +160,16 @@ class CategoryController extends Controller
     {
         try {
             $categoryId = $request->param('id');
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = $request->json();
 
             if (!$categoryId) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Category ID is required',
-                ]);
+                return $this->error('Category ID is required', null, 400);
             }
 
             $category = Category::find($categoryId);
 
             if (!$category) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Category not found',
-                ]);
+                return $this->error('Category not found', null, 404);
             }
 
             $category->update([
@@ -138,16 +182,9 @@ class CategoryController extends Controller
                 'sort_order' => $data['sort_order'] ?? $category->sort_order,
             ]);
 
-            return json_encode([
-                'success' => true,
-                'message' => 'Category updated successfully',
-                'data' => $category,
-            ]);
+            return $this->success($category, 'Category updated successfully', 200);
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error($e->getMessage(), null, 500);
         }
     }
 
@@ -160,32 +197,20 @@ class CategoryController extends Controller
             $categoryId = $request->param('id');
 
             if (!$categoryId) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Category ID is required',
-                ]);
+                return $this->error('Category ID is required', null, 400);
             }
 
             $category = Category::find($categoryId);
 
             if (!$category) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Category not found',
-                ]);
+                return $this->error('Category not found', null, 404);
             }
 
             $category->delete();
 
-            return json_encode([
-                'success' => true,
-                'message' => 'Category deleted successfully',
-            ]);
+            return $this->success(null, 'Category deleted successfully', 200);
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error($e->getMessage(), null, 500);
         }
     }
 
