@@ -13,36 +13,77 @@ class Router
         'DELETE' => [],
     ];
 
+    /**
+     * @var array<string, array<string, list<class-string<\Framework\MiddlewareInterface>>>>
+     */
+    protected array $routeMiddleware = [
+        'GET' => [],
+        'POST' => [],
+        'PUT' => [],
+        'DELETE' => [],
+    ];
+
     protected string $currentPrefix = '';
 
-    public function group(string $prefix, \Closure $callback): void
+    /** @var list<class-string<\Framework\MiddlewareInterface>> */
+    protected array $groupMiddlewareStack = [];
+
+    public function group(string $prefix, \Closure $callback, array $middleware = []): void
     {
         $previousPrefix = $this->currentPrefix;
+        $previousStack = $this->groupMiddlewareStack;
         $this->currentPrefix = $previousPrefix.$prefix;
+        $this->groupMiddlewareStack = array_merge($previousStack, $middleware);
 
         $callback($this);
 
         $this->currentPrefix = $previousPrefix;
+        $this->groupMiddlewareStack = $previousStack;
     }
 
-    public function get(string $uri, array|string $action): void
+    /**
+     * @param array<class-string<\Framework\MiddlewareInterface>> $middleware
+     */
+    public function get(string $uri, array|string $action, array $middleware = []): void
     {
-        $this->routes['GET'][$this->currentPrefix.$uri] = $action;
+        $this->registerRoute('GET', $uri, $action, $middleware);
     }
 
-    public function post(string $uri, array|string $action): void
+    /**
+     * @param array<class-string<\Framework\MiddlewareInterface>> $middleware
+     */
+    public function post(string $uri, array|string $action, array $middleware = []): void
     {
-        $this->routes['POST'][$this->currentPrefix.$uri] = $action;
+        $this->registerRoute('POST', $uri, $action, $middleware);
     }
 
-    public function put(string $uri, array|string $action): void
+    /**
+     * @param array<class-string<\Framework\MiddlewareInterface>> $middleware
+     */
+    public function put(string $uri, array|string $action, array $middleware = []): void
     {
-        $this->routes['PUT'][$this->currentPrefix.$uri] = $action;
+        $this->registerRoute('PUT', $uri, $action, $middleware);
     }
 
-    public function delete(string $uri, array|string $action): void
+    /**
+     * @param array<class-string<\Framework\MiddlewareInterface>> $middleware
+     */
+    public function delete(string $uri, array|string $action, array $middleware = []): void
     {
-        $this->routes['DELETE'][$this->currentPrefix.$uri] = $action;
+        $this->registerRoute('DELETE', $uri, $action, $middleware);
+    }
+
+    /**
+     * @param array<class-string<\Framework\MiddlewareInterface>> $middleware
+     */
+    protected function registerRoute(string $method, string $uri, array|string $action, array $middleware): void
+    {
+        $key = $this->currentPrefix.$uri;
+        $this->routes[$method][$key] = $action;
+        $merged = array_merge($this->groupMiddlewareStack, $middleware);
+        if ([] !== $merged) {
+            $this->routeMiddleware[$method][$key] = $merged;
+        }
     }
 
     public function dispatch(Request $request, ServiceContainer $container)
@@ -50,12 +91,14 @@ class Router
         $method = $request->method();
         $uri = $request->uri();
 
-        // First try exact match
+        $routeKey = $uri;
         $action = $this->routes[$method][$uri] ?? null;
 
-        // If no exact match, try pattern matching
         if (!$action) {
-            $action = $this->matchPattern($method, $uri, $request);
+            $matched = $this->matchPattern($method, $uri, $request);
+            if ($matched) {
+                [$action, $routeKey] = $matched;
+            }
         }
 
         if (!$action) {
@@ -64,17 +107,26 @@ class Router
             return $response->error("Route not found: {$uri}", null, 404);
         }
 
+        foreach ($this->routeMiddleware[$method][$routeKey] ?? [] as $middlewareClass) {
+            /** @var MiddlewareInterface $pipe */
+            $pipe = $container->make($middlewareClass);
+            $halt = $pipe->handle($request, $container);
+            if (null !== $halt) {
+                return $halt;
+            }
+        }
+
         if ($action instanceof \Closure) {
             return $action($container, $request);
         }
 
         if (is_array($action)) {
-            [$controllerClass, $method] = $action;
+            [$controllerClass, $methodName] = $action;
             $controller = $container->make($controllerClass);
 
             return $this->callAction(
                 $controller,
-                $method,
+                $methodName,
                 $container,
                 $request
             );
@@ -87,8 +139,10 @@ class Router
 
     /**
      * Match URI against route patterns and extract parameters.
+     *
+     * @return array{0: array|string, 1: string}|null [action, pattern]
      */
-    protected function matchPattern(string $method, string $uri, Request $request)
+    protected function matchPattern(string $method, string $uri, Request $request): ?array
     {
         foreach ($this->routes[$method] as $pattern => $action) {
             // Convert route pattern to regex
@@ -105,7 +159,7 @@ class Router
                     }
                 }
 
-                return $action;
+                return [$action, $pattern];
             }
         }
 

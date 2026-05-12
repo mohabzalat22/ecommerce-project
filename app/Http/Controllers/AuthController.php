@@ -5,36 +5,21 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Support\StoreSession;
 use Framework\Request;
 
 class AuthController extends Controller
 {
     private const MIN_PASSWORD = 8;
 
-    private function startSession(bool $persistent): void
-    {
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            return;
-        }
-
-        session_name('ecom_store');
-        session_set_cookie_params([
-            'lifetime' => $persistent ? (60 * 60 * 24 * 14) : 0,
-            'path' => '/',
-            'secure' => false,
-            'httponly' => true,
-            'samesite' => 'Lax',
-        ]);
-        session_start();
-    }
-
-    /** @return array{id: int, name: string, email: string} */
+    /** @return array{id: int, name: string, email: string, role: string} */
     private function userPayload(User $user): array
     {
         return [
             'id' => (int) $user->id,
             'name' => (string) $user->name,
             'email' => (string) $user->email,
+            'role' => (string) ($user->role ?? 'customer'),
         ];
     }
 
@@ -69,12 +54,13 @@ class AuthController extends Controller
                 'password' => password_hash($password, PASSWORD_DEFAULT),
                 'email_verified_at' => null,
                 'remember_token' => null,
+                'role' => 'customer',
             ]);
         } catch (\Throwable $e) {
             return $this->error('Could not create account', ['error' => $e->getMessage()], 500);
         }
 
-        $this->startSession($remember);
+        StoreSession::ensure($remember);
         $_SESSION['user_id'] = (int) $user->id;
 
         return $this->success(['user' => $this->userPayload($user)], 'Account created', 201);
@@ -97,7 +83,7 @@ class AuthController extends Controller
             return $this->error('Invalid email or password', null, 401);
         }
 
-        $this->startSession($remember);
+        StoreSession::ensure($remember);
         $_SESSION['user_id'] = (int) $user->id;
 
         return $this->success(['user' => $this->userPayload($user)], 'Signed in');
@@ -105,7 +91,7 @@ class AuthController extends Controller
 
     public function session(Request $request)
     {
-        $this->startSession(false);
+        StoreSession::ensure(false);
 
         if (empty($_SESSION['user_id'])) {
             return $this->success(['authenticated' => false], 'OK');
@@ -127,7 +113,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $this->startSession(false);
+        StoreSession::ensure(false);
 
         $_SESSION = [];
 
