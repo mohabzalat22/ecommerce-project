@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Models\Category;
 use App\Models\EavAttribute;
 use App\Models\EavAttributeOption;
 use Framework\Request;
