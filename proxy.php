@@ -6,10 +6,12 @@ declare(strict_types=1);
  * Router for PHP Built-in Server with -t public
  * Routes all requests through index.php unless the file/directory exists.
  */
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
 
-// If the requested file/directory exists, serve it
-if ('/' !== $uri && file_exists(__DIR__.$uri)) {
+$publicPath = __DIR__.'/public'.$uri;
+
+// If the requested file exists under public/, let the built-in server serve it
+if ('/' !== $uri && is_file($publicPath)) {
     return false;
 }
 

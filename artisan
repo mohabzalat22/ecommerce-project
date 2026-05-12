@@ -4,6 +4,7 @@
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/bootstrap/app.php';
 require __DIR__ . '/Framework/commands/MigrateCommand.php';
+require __DIR__ . '/Framework/commands/MigrateFreshCommand.php';
 require __DIR__ . '/Framework/commands/SeedCommand.php';
 
 use Symfony\Component\Console\Application;
@@ -13,6 +14,7 @@ $app = new Application('MoFramework', '1.0.0');
 
 // Register commands
 $app->addCommand(new MigrateCommand());
+$app->addCommand(new MigrateFreshCommand());
 $app->addCommand(new SeedCommand());
 
 $app->run();

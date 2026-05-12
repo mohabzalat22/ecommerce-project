@@ -29,7 +29,7 @@ class EcommerceSeeder
                 'parent_id' => null,
                 'name' => "Men's Clothing",
                 'slug' => 'mens-clothing',
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->categoryImageFilename(1)),
                 'description' => "All men's apparel — new arrivals, essentials and classics.",
                 'is_active' => true,
                 'sort_order' => 0,
@@ -40,7 +40,7 @@ class EcommerceSeeder
                 'parent_id' => 1,
                 'name' => 'Jackets & Outerwear',
                 'slug' => 'jackets-outerwear',
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->categoryImageFilename(2)),
                 'description' => 'Overshirts, field jackets, bombers and coats.',
                 'is_active' => true,
                 'sort_order' => 1,
@@ -50,7 +50,7 @@ class EcommerceSeeder
                 'parent_id' => 1,
                 'name' => 'Shirts & Tops',
                 'slug' => 'shirts-tops',
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->categoryImageFilename(3)),
                 'description' => 'Oxford shirts, flannels, henleys and tees.',
                 'is_active' => true,
                 'sort_order' => 2,
@@ -60,7 +60,7 @@ class EcommerceSeeder
                 'parent_id' => 1,
                 'name' => 'Pants & Chinos',
                 'slug' => 'pants-chinos',
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->categoryImageFilename(4)),
                 'description' => 'Slim, regular and relaxed fit trousers.',
                 'is_active' => true,
                 'sort_order' => 3,
@@ -70,7 +70,7 @@ class EcommerceSeeder
                 'parent_id' => 1,
                 'name' => 'Jeans',
                 'slug' => 'jeans',
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->categoryImageFilename(5)),
                 'description' => 'Raw, washed and distressed denim.',
                 'is_active' => true,
                 'sort_order' => 4,
@@ -81,7 +81,7 @@ class EcommerceSeeder
                 'parent_id' => 2,
                 'name' => 'Overshirts',
                 'slug' => 'overshirts',
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->categoryImageFilename(6)),
                 'description' => 'Wear-over tees or layer under a coat.',
                 'is_active' => true,
                 'sort_order' => 1,
@@ -91,7 +91,7 @@ class EcommerceSeeder
                 'parent_id' => 2,
                 'name' => 'Field Jackets',
                 'slug' => 'field-jackets',
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->categoryImageFilename(7)),
                 'description' => 'Utility-inspired, weather-ready outerwear.',
                 'is_active' => true,
                 'sort_order' => 2,
@@ -101,7 +101,7 @@ class EcommerceSeeder
                 'parent_id' => 3,
                 'name' => 'Flannel Shirts',
                 'slug' => 'flannel-shirts',
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->categoryImageFilename(8)),
                 'description' => 'Brushed cotton flannel in seasonal plaids.',
                 'is_active' => true,
                 'sort_order' => 1,
@@ -111,7 +111,7 @@ class EcommerceSeeder
                 'parent_id' => 3,
                 'name' => 'Oxford Shirts',
                 'slug' => 'oxford-shirts',
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->categoryImageFilename(9)),
                 'description' => 'Classic button-down Oxford weave.',
                 'is_active' => true,
                 'sort_order' => 2,
@@ -217,7 +217,7 @@ class EcommerceSeeder
             [
                 'id' => 1,
                 'product_id' => 1,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(1, 0)),
                 'alt_text' => 'Highland Plaid Overshirt — front',
                 'sort_order' => 0,
                 'is_primary' => true,
@@ -225,7 +225,7 @@ class EcommerceSeeder
             [
                 'id' => 2,
                 'product_id' => 1,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(1, 1)),
                 'alt_text' => 'Highland Plaid Overshirt — detail',
                 'sort_order' => 1,
                 'is_primary' => false,
@@ -233,7 +233,7 @@ class EcommerceSeeder
             [
                 'id' => 3,
                 'product_id' => 1,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(1, 2)),
                 'alt_text' => 'Highland Plaid Overshirt — back',
                 'sort_order' => 2,
                 'is_primary' => false,
@@ -242,7 +242,7 @@ class EcommerceSeeder
             [
                 'id' => 4,
                 'product_id' => 2,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(2, 0)),
                 'alt_text' => 'Essential Black Overshirt — front',
                 'sort_order' => 0,
                 'is_primary' => true,
@@ -250,7 +250,7 @@ class EcommerceSeeder
             [
                 'id' => 5,
                 'product_id' => 2,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(2, 1)),
                 'alt_text' => 'Essential Black Overshirt — back',
                 'sort_order' => 1,
                 'is_primary' => false,
@@ -259,7 +259,7 @@ class EcommerceSeeder
             [
                 'id' => 6,
                 'product_id' => 3,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(3, 0)),
                 'alt_text' => 'Olive Field Jacket — front',
                 'sort_order' => 0,
                 'is_primary' => true,
@@ -267,7 +267,7 @@ class EcommerceSeeder
             [
                 'id' => 7,
                 'product_id' => 3,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(3, 1)),
                 'alt_text' => 'Olive Field Jacket — side',
                 'sort_order' => 1,
                 'is_primary' => false,
@@ -276,7 +276,7 @@ class EcommerceSeeder
             [
                 'id' => 8,
                 'product_id' => 4,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(4, 0)),
                 'alt_text' => 'Midnight Utility Jacket — front',
                 'sort_order' => 0,
                 'is_primary' => true,
@@ -285,7 +285,7 @@ class EcommerceSeeder
             [
                 'id' => 9,
                 'product_id' => 5,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(5, 0)),
                 'alt_text' => 'Classic White Oxford Shirt — front',
                 'sort_order' => 0,
                 'is_primary' => true,
@@ -293,7 +293,7 @@ class EcommerceSeeder
             [
                 'id' => 10,
                 'product_id' => 5,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(5, 1)),
                 'alt_text' => 'Classic White Oxford Shirt — tucked',
                 'sort_order' => 1,
                 'is_primary' => false,
@@ -302,7 +302,7 @@ class EcommerceSeeder
             [
                 'id' => 11,
                 'product_id' => 6,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(6, 0)),
                 'alt_text' => 'Slim Indigo Jeans — front',
                 'sort_order' => 0,
                 'is_primary' => true,
@@ -311,7 +311,7 @@ class EcommerceSeeder
             [
                 'id' => 12,
                 'product_id' => 7,
-                'image_url' => 'http://localhost:8000/assets/image.png',
+                'image_url' => $this->publicAssetUrl($this->productImageFilename(7, 0)),
                 'alt_text' => 'Tapered Grey Chinos — front',
                 'sort_order' => 0,
                 'is_primary' => true,
@@ -319,6 +319,43 @@ class EcommerceSeeder
         ];
 
         Capsule::table('product_images')->insert($images);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function publicAssetImageFiles(): array
+    {
+        return ['2.png', '3.png', '4.png', '5.png', '6.png', '7.png'];
+    }
+
+    private function publicAssetUrl(string $filename): string
+    {
+        return 'http://localhost:8000/assets/' . $filename;
+    }
+
+    private function productImageFilename(int $productId, int $sortOrder): string
+    {
+        $files = $this->publicAssetImageFiles();
+
+        return $files[(($productId - 1) + $sortOrder) % count($files)];
+    }
+
+    /** Maps each category to a PNG under public/assets (1.png–7.png). */
+    private function categoryImageFilename(int $categoryId): string
+    {
+        return match ($categoryId) {
+            1 => '1.png',
+            2 => '2.png',
+            3 => '3.png',
+            4 => '4.png',
+            5 => '5.png',
+            6 => '6.png',
+            7 => '7.png',
+            8 => '2.png',
+            9 => '3.png',
+            default => '1.png',
+        };
     }
 
     private function seedEavAttributes(): void

@@ -45,7 +45,7 @@ function runRequest($method, $uri)
 
 // GET (use prefixed API path)
 $get = runRequest('GET', '/api/v1.0.0/home');
-if (!isset($get['response']) || 'hello' !== $get['response']) {
+if (!isset($get['data']['message']) || 'hello' !== $get['data']['message']) {
     echo "GET /api/home test failed\n";
 
     exit(1);
@@ -53,7 +53,7 @@ if (!isset($get['response']) || 'hello' !== $get['response']) {
 
 // POST
 $post = runRequest('POST', '/api/v1.0.0/home');
-if (!isset($post['response']) || 'post received' !== $post['response']) {
+if (!isset($post['data']['message']) || 'post received' !== $post['data']['message']) {
     echo "POST /api/home test failed\n";
 
     exit(1);
@@ -61,7 +61,7 @@ if (!isset($post['response']) || 'post received' !== $post['response']) {
 
 // DELETE
 $del = runRequest('DELETE', '/api/v1.0.0/home');
-if (!isset($del['response']) || 'resource deleted' !== $del['response']) {
+if (!isset($del['data']['message']) || 'resource deleted' !== $del['data']['message']) {
     echo "DELETE /api/home test failed\n";
 
     exit(1);
