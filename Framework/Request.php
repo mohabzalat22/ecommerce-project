@@ -6,6 +6,8 @@ namespace Framework;
 
 class Request
 {
+    protected array $params = [];
+
     public function uri(): string
     {
         return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -24,6 +26,16 @@ class Request
     public function input(string $key, $default = null)
     {
         return $_REQUEST[$key] ?? $default;
+    }
+
+    public function param(string $key, $default = null)
+    {
+        return $this->params[$key] ?? $default;
+    }
+
+    public function setParam(string $key, $value): void
+    {
+        $this->params[$key] = $value;
     }
 
     public function json(): array

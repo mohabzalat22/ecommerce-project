@@ -9,29 +9,54 @@ class Router
     protected array $routes = [
         'GET' => [],
         'POST' => [],
+        'PUT' => [],
         'DELETE' => [],
     ];
 
+    protected string $currentPrefix = '';
+
+    public function group(string $prefix, \Closure $callback): void
+    {
+        $previousPrefix = $this->currentPrefix;
+        $this->currentPrefix = $previousPrefix.$prefix;
+
+        $callback($this);
+
+        $this->currentPrefix = $previousPrefix;
+    }
+
     public function get(string $uri, array|string $action): void
     {
-        $this->routes['GET'][$uri] = $action;
+        $this->routes['GET'][$this->currentPrefix.$uri] = $action;
     }
 
     public function post(string $uri, array|string $action): void
     {
-        $this->routes['POST'][$uri] = $action;
+        $this->routes['POST'][$this->currentPrefix.$uri] = $action;
+    }
+
+    public function put(string $uri, array|string $action): void
+    {
+        $this->routes['PUT'][$this->currentPrefix.$uri] = $action;
     }
 
     public function delete(string $uri, array|string $action): void
     {
-        $this->routes['DELETE'][$uri] = $action;
+        $this->routes['DELETE'][$this->currentPrefix.$uri] = $action;
     }
 
     public function dispatch(Request $request, ServiceContainer $container)
     {
         $method = $request->method();
         $uri = $request->uri();
+
+        // First try exact match
         $action = $this->routes[$method][$uri] ?? null;
+
+        // If no exact match, try pattern matching
+        if (!$action) {
+            $action = $this->matchPattern($method, $uri, $request);
+        }
 
         if (!$action) {
             throw new \Exception("404 NOT FOUND: {$uri}");
@@ -54,6 +79,32 @@ class Router
         }
 
         throw new \Exception('Invaliud Route action');
+    }
+
+    /**
+     * Match URI against route patterns and extract parameters.
+     */
+    protected function matchPattern(string $method, string $uri, Request $request)
+    {
+        foreach ($this->routes[$method] as $pattern => $action) {
+            // Convert route pattern to regex
+            // e.g., /api/v1.0.0/categories/{id} becomes regex pattern
+            $regexPattern = preg_replace('/\{(\w+)\}/', '(?P<$1>\d+)', $pattern);
+            $regexPattern = '@^'.$regexPattern.'$@';
+
+            if (preg_match($regexPattern, $uri, $matches)) {
+                // Extract parameters and store in request
+                foreach ($matches as $key => $value) {
+                    if (!is_numeric($key)) {
+                        $request->setParam($key, $value);
+                    }
+                }
+
+                return $action;
+            }
+        }
+
+        return null;
     }
 
     protected function callAction(
