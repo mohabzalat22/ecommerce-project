@@ -8,21 +8,21 @@ class HomeController extends Controller
 {
     public function index()
     {
-        return json_encode(['response' => 'hello']);
+        return $this->success(['message' => 'hello']);
     }
 
     public function store()
     {
-        return json_encode([
-            'response' => 'post received',
+        return $this->success([
+            'message' => 'post received',
             'method' => $_SERVER['REQUEST_METHOD'] ?? null,
-        ]);
+        ], 'Data received');
     }
 
     public function destroy()
     {
-        return json_encode([
-            'response' => 'resource deleted',
+        return $this->success([
+            'message' => 'resource deleted',
             'method' => $_SERVER['REQUEST_METHOD'] ?? null,
         ]);
     }

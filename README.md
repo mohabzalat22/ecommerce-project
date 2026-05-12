@@ -43,7 +43,7 @@ touch storage/database.sqlite
 Start the built-in PHP server from the project root:
 
 ```bash
-php -S localhost:8000 -t public
+php -S localhost:8000 -t public proxy.php
 ```
 
 Open <http://localhost:8000> in your browser.

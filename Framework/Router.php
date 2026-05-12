@@ -59,7 +59,9 @@ class Router
         }
 
         if (!$action) {
-            throw new \Exception("404 NOT FOUND: {$uri}");
+            $response = new Response();
+
+            return $response->error("Route not found: {$uri}", null, 404);
         }
 
         if ($action instanceof \Closure) {
@@ -78,7 +80,9 @@ class Router
             );
         }
 
-        throw new \Exception('Invaliud Route action');
+        $response = new Response();
+
+        return $response->error('Invalid route action', null, 500);
     }
 
     /**

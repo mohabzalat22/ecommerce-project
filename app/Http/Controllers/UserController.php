@@ -17,16 +17,12 @@ class UserController extends Controller
         try {
             $users = User::all();
 
-            return json_encode([
-                'success' => true,
-                'data' => $users,
+            return $this->success([
+                'items' => $users,
                 'count' => count($users),
-            ]);
+            ], 'Users retrieved successfully');
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error('Failed to retrieve users', ['error' => $e->getMessage()], 400);
         }
     }
 
@@ -39,25 +35,16 @@ class UserController extends Controller
             $userId = $request->param('id');
 
             if (!$userId) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'User ID is required',
-                ]);
+                return $this->error('User ID is required', null, 400);
             }
 
             $user = User::find($userId);
 
             if (!$user) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'User not found',
-                ]);
+                return $this->error('User not found', null, 404);
             }
 
-            return json_encode([
-                'success' => true,
-                'data' => $user,
-            ]);
+            return $this->success($user, 'User retrieved successfully');
         } catch (\Exception $e) {
             return json_encode([
                 'success' => false,

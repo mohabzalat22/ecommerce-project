@@ -3,6 +3,9 @@
 // Autoload → Container → Bootstrap services → Kernel → Request → Router → Controller → Response
 declare(strict_types=1);
 
+// Set JSON header before any output
+header('Content-Type: application/json; charset=utf-8');
+
 require __DIR__.'/../vendor/autoload.php';
 
 use Framework\Kernel;

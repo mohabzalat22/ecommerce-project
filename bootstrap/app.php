@@ -34,6 +34,9 @@ if (!isset($container) || !$container instanceof ServiceContainer) {
 
 (new ConfigServiceProvider())->register($container);
 
+// Bootstrap database connections
+require_once BASE_PATH.'/bootstrap/database.php';
+
 /*
 |--------------------------------------------------------------------------
 | BINDINGS

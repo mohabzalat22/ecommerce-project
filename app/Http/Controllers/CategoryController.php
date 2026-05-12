@@ -17,16 +17,12 @@ class CategoryController extends Controller
         try {
             $categories = Category::with('children', 'products')->get();
 
-            return json_encode([
-                'success' => true,
-                'data' => $categories,
+            return $this->success([
+                'items' => $categories,
                 'count' => count($categories),
-            ]);
+            ], 'Categories retrieved successfully');
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error('Failed to retrieve categories', ['error' => $e->getMessage()], 400);
         }
     }
 
