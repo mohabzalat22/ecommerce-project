@@ -8,6 +8,7 @@ use App\Controllers\CatalogFilterController;
 use App\Controllers\CategoryController;
 use App\Controllers\EavAttributeController;
 use App\Controllers\HomeController;
+use App\Controllers\OrderController;
 use App\Controllers\ProductController;
 use App\Controllers\ProductEavValueController;
 use App\Controllers\ProductImageController;
@@ -82,6 +83,8 @@ class Api
                 $router->put('/{id}', [UserController::class, 'update']);
                 $router->delete('/{id}', [UserController::class, 'destroy']);
             });
+
+            $router->post('/orders', [OrderController::class, 'store']);
         });
     }
 }
