@@ -84,6 +84,10 @@ class Api
                 $router->delete('/{id}', [UserController::class, 'destroy']);
             });
 
+            $router->get('/orders', [OrderController::class, 'index']);
+            $router->get('/orders/{id}', [OrderController::class, 'show']);
+            $router->put('/orders/{id}', [OrderController::class, 'update']);
+            $router->delete('/orders/{id}', [OrderController::class, 'destroy']);
             $router->post('/orders', [OrderController::class, 'store']);
         });
     }

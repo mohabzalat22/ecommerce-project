@@ -27,6 +27,7 @@ class Order extends Model
         'subtotal_cents',
         'shipping_cents',
         'total_cents',
+        'status',
     ];
 
     protected $casts = [

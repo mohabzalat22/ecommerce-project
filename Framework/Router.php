@@ -93,7 +93,8 @@ class Router
         foreach ($this->routes[$method] as $pattern => $action) {
             // Convert route pattern to regex
             // e.g., /api/v1.0.0/categories/{id} becomes regex pattern
-            $regexPattern = preg_replace('/\{(\w+)\}/', '(?P<$1>\d+)', $pattern);
+            // Allow non-numeric IDs (e.g. order UUIDs) while still matching integer resource routes.
+            $regexPattern = preg_replace('/\{(\w+)\}/', '(?P<$1>[^/]+)', $pattern);
             $regexPattern = '@^'.$regexPattern.'$@';
 
             if (preg_match($regexPattern, $uri, $matches)) {
