@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Routes;
 
+use App\Controllers\AuthController;
 use App\Controllers\CatalogFilterController;
 use App\Controllers\CategoryController;
 use App\Controllers\EavAttributeController;
@@ -26,6 +27,11 @@ class Api
 
         // API v1.0.0 group
         $router->group('/api/v1.0.0', function (Router $router): void {
+            $router->post('/auth/register', [AuthController::class, 'register']);
+            $router->post('/auth/login', [AuthController::class, 'login']);
+            $router->get('/auth/session', [AuthController::class, 'session']);
+            $router->post('/auth/logout', [AuthController::class, 'logout']);
+
             $router->get('/storefront/home', [HomeController::class, 'storefront']);
 
             $router->group('/filters', function (Router $router): void {

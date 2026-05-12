@@ -54,47 +54,50 @@ class UserController extends Controller
     }
 
     /**
-     * Create a new user.
+     * Create a new user (admin / API; persists to users table).
      */
     public function store(Request $request)
     {
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = $request->json();
+            $name = trim((string) ($data['name'] ?? ''));
+            $email = trim((string) ($data['email'] ?? ''));
+            $password = (string) ($data['password'] ?? '');
 
-            // Validate required fields
-            if (!$data || !isset($data['name']) || !isset($data['email'])) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Name and email are required',
-                ]);
+            if ($name === '' || $email === '') {
+                return $this->error('Name and email are required', null, 422);
             }
 
-            // Check if email already exists
-            if (User::where('email', $data['email'])->exists()) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Email already exists',
-                ]);
+            if ($password === '') {
+                return $this->error('Password is required', null, 422);
+            }
+
+            if (User::where('email', $email)->exists()) {
+                return $this->error('Email already exists', null, 409);
             }
 
             $user = User::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => isset($data['password']) ? password_hash($data['password'], PASSWORD_BCRYPT) : null,
+                'name' => $name,
+                'email' => $email,
+                'password' => password_hash($password, PASSWORD_DEFAULT),
                 'email_verified_at' => $data['email_verified_at'] ?? null,
                 'remember_token' => null,
             ]);
 
-            return json_encode([
-                'success' => true,
-                'message' => 'User created successfully',
-                'data' => $user,
-            ]);
+            return $this->success(
+                [
+                    'id' => (int) $user->id,
+                    'name' => (string) $user->name,
+                    'email' => (string) $user->email,
+                    'email_verified_at' => $user->email_verified_at,
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at,
+                ],
+                'User created successfully',
+                201
+            );
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error('Failed to create user', ['error' => $e->getMessage()], 500);
         }
     }
 
