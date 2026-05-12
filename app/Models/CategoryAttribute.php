@@ -9,9 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CategoryAttribute extends Model
 {
-    protected $table = 'category_attributes';
-
     public $timestamps = false;
+    protected $table = 'category_attributes';
 
     protected $fillable = [
         'category_id',

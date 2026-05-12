@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\EavProductValue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EavAttributeOption extends Model
 {
-    protected $table = 'eav_attribute_options';
-
     public $timestamps = false;
+    protected $table = 'eav_attribute_options';
 
     protected $fillable = [
         'attribute_id',

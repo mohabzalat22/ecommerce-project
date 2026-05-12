@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Category;
-use App\Models\EavAttributeOption;
-use App\Models\EavProductValue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EavAttribute extends Model
 {
-    protected $table = 'eav_attributes';
-
     public $timestamps = false;
+    protected $table = 'eav_attributes';
 
     protected $fillable = [
         'name',
@@ -47,6 +43,7 @@ class EavAttribute extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'category_attributes', 'attribute_id', 'category_id')
-            ->withPivot('sort_order');
+            ->withPivot('sort_order')
+        ;
     }
 }

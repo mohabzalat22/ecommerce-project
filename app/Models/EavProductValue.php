@@ -9,9 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EavProductValue extends Model
 {
-    protected $table = 'eav_product_values';
-
     public $timestamps = false;
+    protected $table = 'eav_product_values';
 
     protected $fillable = [
         'product_id',

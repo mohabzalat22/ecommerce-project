@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\EavAttribute;
-use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,9 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    protected $table = 'categories';
-
     public $timestamps = false;
+    protected $table = 'categories';
 
     protected $fillable = [
         'parent_id',
@@ -52,6 +49,7 @@ class Category extends Model
     public function attributes(): BelongsToMany
     {
         return $this->belongsToMany(EavAttribute::class, 'category_attributes', 'category_id', 'attribute_id')
-            ->withPivot('sort_order');
+            ->withPivot('sort_order')
+        ;
     }
 }
