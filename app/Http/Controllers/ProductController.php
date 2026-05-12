@@ -39,16 +39,9 @@ class ProductController extends Controller
 
             $products = $query->get();
 
-            return json_encode([
-                'success' => true,
-                'data' => $products,
-                'count' => count($products),
-            ]);
+            return $this->success($products, 'Products retrieved successfully', 200);
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error($e->getMessage(), null, 500);
         }
     }
 
@@ -61,10 +54,7 @@ class ProductController extends Controller
             $productId = $request->param('id');
 
             if (!$productId) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Product ID is required',
-                ]);
+                return $this->error('Product ID is required', null, 400);
             }
 
             $product = Product::with('category', 'images', 'attributeValues')
@@ -72,21 +62,12 @@ class ProductController extends Controller
             ;
 
             if (!$product) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Product not found',
-                ]);
+                return $this->error('Product not found', null, 404);
             }
 
-            return json_encode([
-                'success' => true,
-                'data' => $product,
-            ]);
+            return $this->success($product, 'Product retrieved successfully', 200);
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error($e->getMessage(), null, 500);
         }
     }
 
@@ -100,10 +81,7 @@ class ProductController extends Controller
 
             // Validate required fields
             if (!$data || !isset($data['name']) || !isset($data['category_id'])) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Name and category_id are required',
-                ]);
+                return $this->error('Name and category_id are required', null, 400);
             }
 
             $product = Product::create([
@@ -118,16 +96,9 @@ class ProductController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
 
-            return json_encode([
-                'success' => true,
-                'message' => 'Product created successfully',
-                'data' => $product,
-            ]);
+            return $this->success($product, 'Product created successfully', 201);
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error($e->getMessage(), null, 500);
         }
     }
 
@@ -141,19 +112,13 @@ class ProductController extends Controller
             $data = json_decode(file_get_contents('php://input'), true);
 
             if (!$productId) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Product ID is required',
-                ]);
+                return $this->error('Product ID is required', null, 400);
             }
 
             $product = Product::find($productId);
 
             if (!$product) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Product not found',
-                ]);
+                return $this->error('Product not found', null, 404);
             }
 
             $product->update([
@@ -167,16 +132,9 @@ class ProductController extends Controller
                 'is_active' => $data['is_active'] ?? $product->is_active,
             ]);
 
-            return json_encode([
-                'success' => true,
-                'message' => 'Product updated successfully',
-                'data' => $product,
-            ]);
+            return $this->success($product, 'Product updated successfully', 200);
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error($e->getMessage(), null, 500);
         }
     }
 
@@ -189,32 +147,20 @@ class ProductController extends Controller
             $productId = $request->param('id');
 
             if (!$productId) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Product ID is required',
-                ]);
+                return $this->error('Product ID is required', null, 400);
             }
 
             $product = Product::find($productId);
 
             if (!$product) {
-                return json_encode([
-                    'success' => false,
-                    'message' => 'Product not found',
-                ]);
+                return $this->error('Product not found', null, 404);
             }
 
             $product->delete();
 
-            return json_encode([
-                'success' => true,
-                'message' => 'Product deleted successfully',
-            ]);
+            return $this->success(null, 'Product deleted successfully', 200);
         } catch (\Exception $e) {
-            return json_encode([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ]);
+            return $this->error($e->getMessage(), null, 500);
         }
     }
 
