@@ -14,7 +14,7 @@ class Router
     ];
 
     /**
-     * @var array<string, array<string, list<class-string<\Framework\MiddlewareInterface>>>>
+     * @var array<string, array<string, list<class-string<MiddlewareInterface>>>>
      */
     protected array $routeMiddleware = [
         'GET' => [],
@@ -25,7 +25,7 @@ class Router
 
     protected string $currentPrefix = '';
 
-    /** @var list<class-string<\Framework\MiddlewareInterface>> */
+    /** @var list<class-string<MiddlewareInterface>> */
     protected array $groupMiddlewareStack = [];
 
     public function group(string $prefix, \Closure $callback, array $middleware = []): void
@@ -42,7 +42,7 @@ class Router
     }
 
     /**
-     * @param array<class-string<\Framework\MiddlewareInterface>> $middleware
+     * @param array<class-string<MiddlewareInterface>> $middleware
      */
     public function get(string $uri, array|string $action, array $middleware = []): void
     {
@@ -50,7 +50,7 @@ class Router
     }
 
     /**
-     * @param array<class-string<\Framework\MiddlewareInterface>> $middleware
+     * @param array<class-string<MiddlewareInterface>> $middleware
      */
     public function post(string $uri, array|string $action, array $middleware = []): void
     {
@@ -58,7 +58,7 @@ class Router
     }
 
     /**
-     * @param array<class-string<\Framework\MiddlewareInterface>> $middleware
+     * @param array<class-string<MiddlewareInterface>> $middleware
      */
     public function put(string $uri, array|string $action, array $middleware = []): void
     {
@@ -66,24 +66,11 @@ class Router
     }
 
     /**
-     * @param array<class-string<\Framework\MiddlewareInterface>> $middleware
+     * @param array<class-string<MiddlewareInterface>> $middleware
      */
     public function delete(string $uri, array|string $action, array $middleware = []): void
     {
         $this->registerRoute('DELETE', $uri, $action, $middleware);
-    }
-
-    /**
-     * @param array<class-string<\Framework\MiddlewareInterface>> $middleware
-     */
-    protected function registerRoute(string $method, string $uri, array|string $action, array $middleware): void
-    {
-        $key = $this->currentPrefix.$uri;
-        $this->routes[$method][$key] = $action;
-        $merged = array_merge($this->groupMiddlewareStack, $middleware);
-        if ([] !== $merged) {
-            $this->routeMiddleware[$method][$key] = $merged;
-        }
     }
 
     public function dispatch(Request $request, ServiceContainer $container)
@@ -138,9 +125,22 @@ class Router
     }
 
     /**
+     * @param array<class-string<MiddlewareInterface>> $middleware
+     */
+    protected function registerRoute(string $method, string $uri, array|string $action, array $middleware): void
+    {
+        $key = $this->currentPrefix.$uri;
+        $this->routes[$method][$key] = $action;
+        $merged = array_merge($this->groupMiddlewareStack, $middleware);
+        if ([] !== $merged) {
+            $this->routeMiddleware[$method][$key] = $merged;
+        }
+    }
+
+    /**
      * Match URI against route patterns and extract parameters.
      *
-     * @return array{0: array|string, 1: string}|null [action, pattern]
+     * @return null|array{0: array|string, 1: string} [action, pattern]
      */
     protected function matchPattern(string $method, string $uri, Request $request): ?array
     {

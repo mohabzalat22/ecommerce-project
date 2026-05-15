@@ -12,22 +12,9 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 
 class OrderController extends Controller
 {
-    private const SHIPPING_CENTS = 599;
-
     /** @var list<string> */
     public const STATUSES = ['pending', 'processing', 'shipped', 'cancelled'];
-
-    private static function generateUuidV4(): string
-    {
-        $bytes = random_bytes(16);
-        $bytes[6] = chr(ord($bytes[6]) & 0x0f | 0x40);
-        $bytes[8] = chr(ord($bytes[8]) & 0x3f | 0x80);
-
-        return vsprintf(
-            '%s%s-%s-%s-%s-%s%s%s',
-            str_split(bin2hex($bytes), 4),
-        );
-    }
+    private const SHIPPING_CENTS = 599;
 
     /**
      * List orders (newest first).
@@ -223,9 +210,21 @@ class OrderController extends Controller
         }
     }
 
+    private static function generateUuidV4(): string
+    {
+        $bytes = random_bytes(16);
+        $bytes[6] = chr(ord($bytes[6]) & 0x0F | 0x40);
+        $bytes[8] = chr(ord($bytes[8]) & 0x3F | 0x80);
+
+        return vsprintf(
+            '%s%s-%s-%s-%s-%s%s%s',
+            str_split(bin2hex($bytes), 4),
+        );
+    }
+
     /**
      * @param array<int|string, mixed> $lines
-     * @param array<string, string>   $errors
+     * @param array<string, string>    $errors
      *
      * @return null|list<array<string, mixed>>
      */
@@ -255,7 +254,7 @@ class OrderController extends Controller
     }
 
     /**
-     * @param array<string, mixed>      $shipping
+     * @param array<string, mixed>       $shipping
      * @param list<array<string, mixed>> $normalized
      *
      * @return array{id: string, subtotal_cents: int, shipping_cents: int, total_cents: int}

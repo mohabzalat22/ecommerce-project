@@ -331,7 +331,7 @@ class EcommerceSeeder
 
     private function publicAssetUrl(string $filename): string
     {
-        return 'http://localhost:8000/assets/' . $filename;
+        return 'http://localhost:8000/assets/'.$filename;
     }
 
     private function productImageFilename(int $productId, int $sortOrder): string

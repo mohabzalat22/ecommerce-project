@@ -9,9 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
-    protected $table = 'orders';
-
     public $incrementing = false;
+    protected $table = 'orders';
 
     protected $keyType = 'string';
 

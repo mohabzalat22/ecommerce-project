@@ -7,12 +7,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\TaxSetting;
 
 class Product extends Model
 {
-    private static ?bool $taxEnabledCache = null;
-
     public $timestamps = false;
     protected $table = 'products';
 
@@ -38,6 +35,7 @@ class Product extends Model
     ];
 
     protected $appends = ['price_after_tax'];
+    private static ?bool $taxEnabledCache = null;
 
     public function category(): BelongsTo
     {

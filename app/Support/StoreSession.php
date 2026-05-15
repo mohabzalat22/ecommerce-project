@@ -11,7 +11,7 @@ final class StoreSession
 {
     public static function ensure(bool $persistent = false): void
     {
-        if (session_status() === PHP_SESSION_ACTIVE) {
+        if (PHP_SESSION_ACTIVE === session_status()) {
             return;
         }
 

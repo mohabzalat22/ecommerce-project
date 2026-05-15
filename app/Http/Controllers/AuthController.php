@@ -12,17 +12,6 @@ class AuthController extends Controller
 {
     private const MIN_PASSWORD = 8;
 
-    /** @return array{id: int, name: string, email: string, role: string} */
-    private function userPayload(User $user): array
-    {
-        return [
-            'id' => (int) $user->id,
-            'name' => (string) $user->name,
-            'email' => (string) $user->email,
-            'role' => (string) ($user->role ?? 'customer'),
-        ];
-    }
-
     public function register(Request $request)
     {
         $data = $request->json();
@@ -31,7 +20,7 @@ class AuthController extends Controller
         $password = (string) ($data['password'] ?? '');
         $remember = !empty($data['remember']);
 
-        if ($name === '' || $email === '' || $password === '') {
+        if ('' === $name || '' === $email || '' === $password) {
             return $this->error('Name, email, and password are required', null, 422);
         }
 
@@ -73,7 +62,7 @@ class AuthController extends Controller
         $password = (string) ($data['password'] ?? '');
         $remember = !empty($data['remember']);
 
-        if ($email === '' || $password === '') {
+        if ('' === $email || '' === $password) {
             return $this->error('Email and password are required', null, 422);
         }
 
@@ -125,5 +114,16 @@ class AuthController extends Controller
         session_destroy();
 
         return $this->success(null, 'Signed out');
+    }
+
+    /** @return array{id: int, name: string, email: string, role: string} */
+    private function userPayload(User $user): array
+    {
+        return [
+            'id' => (int) $user->id,
+            'name' => (string) $user->name,
+            'email' => (string) $user->email,
+            'role' => (string) ($user->role ?? 'customer'),
+        ];
     }
 }

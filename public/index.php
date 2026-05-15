@@ -13,8 +13,9 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-W
 header('Access-Control-Allow-Credentials: true');
 
 // Handle preflight requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+if ('OPTIONS' === $_SERVER['REQUEST_METHOD']) {
     http_response_code(200);
+
     exit;
 }
 

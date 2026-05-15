@@ -282,6 +282,7 @@ class ProductController extends Controller
 
     /**
      * @param array<string, list<string>> $filters
+     * @param mixed                       $query
      */
     private function applyAttributeFilters($query, array $filters): void
     {

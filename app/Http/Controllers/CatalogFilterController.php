@@ -8,6 +8,8 @@ use App\Models\Category;
 use App\Models\EavAttribute;
 use App\Models\EavAttributeOption;
 use Framework\Request;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class CatalogFilterController extends Controller
 {
@@ -134,7 +136,7 @@ class CatalogFilterController extends Controller
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder<\App\Models\EavAttributeOption>
+     * @return Builder<EavAttributeOption>
      */
     private function distinctOptionsForAttributeQuery(int $attributeId, ?int $categoryId)
     {
@@ -181,7 +183,7 @@ class CatalogFilterController extends Controller
     }
 
     /**
-     * @param \Illuminate\Support\Collection<int, \App\Models\EavAttributeOption>|\Illuminate\Database\Eloquent\Collection<int, \App\Models\EavAttributeOption> $rows
+     * @param Collection<int, EavAttributeOption>|\Illuminate\Database\Eloquent\Collection<int, EavAttributeOption> $rows
      *
      * @return list<array{id: int, label: string, value: string, sort_order: int}>
      */

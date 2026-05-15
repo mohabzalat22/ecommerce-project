@@ -64,11 +64,11 @@ class UserController extends Controller
             $email = trim((string) ($data['email'] ?? ''));
             $password = (string) ($data['password'] ?? '');
 
-            if ($name === '' || $email === '') {
+            if ('' === $name || '' === $email) {
                 return $this->error('Name and email are required', null, 422);
             }
 
-            if ($password === '') {
+            if ('' === $password) {
                 return $this->error('Password is required', null, 422);
             }
 
