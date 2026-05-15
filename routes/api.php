@@ -13,6 +13,7 @@ use App\Controllers\OrderController;
 use App\Controllers\ProductController;
 use App\Controllers\ProductEavValueController;
 use App\Controllers\ProductImageController;
+use App\Controllers\TaxSettingsController;
 use App\Controllers\UserController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\RequireAdmin;
@@ -97,6 +98,9 @@ class Api
             $router->put('/orders/{id}', [OrderController::class, 'update'], [RequireAdmin::class]);
             $router->delete('/orders/{id}', [OrderController::class, 'destroy'], [RequireAdmin::class]);
             $router->post('/orders', [OrderController::class, 'store'], [Authenticate::class]);
+
+            $router->get('/settings/tax', [TaxSettingsController::class, 'show'], [RequireAdmin::class]);
+            $router->put('/settings/tax', [TaxSettingsController::class, 'update'], [RequireAdmin::class]);
         });
     }
 }
